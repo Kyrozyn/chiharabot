@@ -137,13 +137,15 @@ $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) u
                     $uaid = $db->get("xp","xp",["userid" => $event->getUserId()]);
                     if($uaid == null or empty($uaid)){
                         $db->insert("xp",["userid" => $event->getUserId(),"xp" => 0]);
+                        file_put_contents('php://stderr',"user tambah : ".$event->getUserId());
                     }
                     else{
                         $xp = rand(1,2);
                         $baru = $xp + $uaid;
                         $db->update("xp",["xp" => $baru],["userid" => $event->getUserId()]);
+                        file_put_contents('php://stderr',"xp ditambahkan : ".$xp."ke = ".$event->getUserId());
                     }
-                    file_put_contents('php://stderr', 'Body: '."log db : ".print_r($db->error(),1));
+                    //file_put_contents('php://stderr', 'Body: '."log db : ".print_r($db->error(),1));
                 break;
             }
 
