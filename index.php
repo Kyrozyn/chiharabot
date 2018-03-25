@@ -153,7 +153,8 @@ $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) u
                     }
                     $satu = messHandler::objText($text);
                     $dua = messHandler::objText($balas);
-                    messHandler::more($event->getReplyToken(), [$satu, $dua]);
+                    //messHandler::more($event->getReplyToken(), [$satu, $dua]);
+                    messHandler::replyText($event->getReplyToken(),print_r($userid,1));
                     break;
                 default :
                     if(!$db->has("xp",["userid" => $event->getUserId()])){
