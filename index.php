@@ -115,7 +115,7 @@ $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) u
                     }
                     else {
                         $text1 = messHandler::objText($balas);
-						if($sr < 2){
+						if($sr < 2 AND $ssr <1){
                             $rand = ["Ampas sekali hidup anda ^_^","Perbanyak tobat agar luck anda meningkat ^_^"];
                             $tx = $rand[array_rand($rand)];
 						}
