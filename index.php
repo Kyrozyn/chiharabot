@@ -134,7 +134,7 @@ $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) u
 
                 break;
                 default :
-                    $uaid = $db->get("xp",null,"xp",["userid" => $event->getUserId()]);
+                    $uaid = $db->get("xp","xp",["userid" => $event->getUserId()]);
                     if(!isset($uaid)){
                         $db->insert("xp",["userid" => $event->getUserId(),"xp" => 0]);
                         file_put_contents('php://stderr',"user tambah : ".$event->getUserId());
