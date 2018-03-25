@@ -162,9 +162,32 @@ $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) u
                     messHandler::more($event->getReplyToken(), [$satu, $dua]);
                     //messHandler::replyText($event->getReplyToken(),print_r($userid,1)."\n".print_r($db->error(),1));
                     break;
+                case "!lbg":
+                    $userid = $db->select("xp",["userid","xp"],["ORDER" => ["xp"=>"DESC"],"LIMIT" => 10,"groupid"=>$event->getGroupId()]);
+                    $text = "***Leaderboard***";
+                    $angka = 0;
+                    $balas = null;
+                    foreach ($userid as $id){
+                        $angka = $angka+1;
+                        $profile = $bot->getProfile($id["userid"]);
+                        $json = $profile->getJSONDecodedBody();
+                        $nama = $json['displayName'];
+                        if(empty($nama)){
+                            $nama = "????";
+                        }
+                        $balas = $balas.$angka.". ".$nama." : ".$id["xp"];
+                        if($angka<10){
+                            $balas = $balas."\n";
+                        }
+                    }
+                    $satu = messHandler::objText($text);
+                    $dua = messHandler::objText($balas);
+                    messHandler::more($event->getReplyToken(), [$satu, $dua]);
+                    //messHandler::replyText($event->getReplyToken(),print_r($userid,1)."\n".print_r($db->error(),1));
+                    break;
                 default :
                     if(!$db->has("xp",["userid" => $event->getUserId()])){
-                        $db->insert("xp",["userid" => $event->getUserId(),"xp" => 0]);
+                        $db->insert("xp",["userid" => $event->getUserId(),"xp" => 0,"groupid"=>$event->getGroupId()]);
                         file_put_contents('php://stderr',"user tambah : ".$event->getUserId());
                     }
                     else{
@@ -173,7 +196,7 @@ $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) u
                         if(isset($a)) {
                             $xp = rand(1, 2);
                             $baru = $xp + $uaid;
-                            $db->update("xp", ["xp" => $baru], ["userid" => $event->getUserId()]);
+                            $db->update("xp", ["xp" => $baru,"groupid"=>$event->getGroupId()], ["userid" => $event->getUserId()]);
                             file_put_contents('php://stderr', "xp ditambahkan : " . $xp . " ke : " . $event->getUserId());
                         }
                         else{
