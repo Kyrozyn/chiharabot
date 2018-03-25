@@ -138,6 +138,19 @@ $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) u
                     //file_put_contents('php://stderr', 'Body: '."log db : ".print_r($db->error(),1));
 
                 break;
+                case "!leaderboard":
+                case "!lb":
+                    $userid = $db->select("xp","userid",['LIMIT' => 10, "ORDER" => ["xp"=>"desc"]]);
+                    $text = "***Leaderboard***\n";
+                    $angka = 0;
+                    $balas = null;
+                    foreach ($userid as $id){
+                        $angka = $angka+1;
+                        $profile = $bot->getProfile($id);
+                        $json = $profile->getJSONDecodedBody();
+                        $nama = $json[['displayName']];
+                        $balas = $balas.$angka.". ".$nama."\n";
+                    }
                 default :
                     if(!$db->has("xp",["userid" => $event->getUserId()])){
                         $db->insert("xp",["userid" => $event->getUserId(),"xp" => 0]);
