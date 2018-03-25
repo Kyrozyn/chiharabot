@@ -37,8 +37,8 @@ $app->get('/',function (){
 $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) use ($bot,$db){
     include "messHandler.php";
     //For log to heroku logs
-    $body = file_get_contents('php://input');
-    file_put_contents('php://stderr', 'Body: '.$body);
+    //$body = file_get_contents('php://input');
+    //file_put_contents('php://stderr', 'Body: '.$body);
     ////////////////////////
     $signature = $req->getHeader(HTTPHeader::LINE_SIGNATURE);
     $result = null;
@@ -129,7 +129,7 @@ $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) u
                 break;
                 case "xp" :
                     $xp = $db->get("xp","xp",["userid" => $event->getUserId()]);
-                    if(isset($xp)) {
+                    if(!$db->has("xp",["userid" => $event->getUserId()])) {
                         messHandler::replyText($event->getReplyToken(), "Xp kamu sebanyak : " . $xp);
                     }
                     else{
@@ -150,7 +150,7 @@ $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) u
                             $xp = rand(1, 2);
                             $baru = $xp + $uaid;
                             $db->update("xp", ["xp" => $baru], ["userid" => $event->getUserId()]);
-                            file_put_contents('php://stderr', "xp ditambahkan : " . $xp . "ke = " . $event->getUserId());
+                            file_put_contents('php://stderr', "xp ditambahkan : " . $xp . " ke : " . $event->getUserId());
                         }
                         else{
                             //do nothing
