@@ -76,6 +76,7 @@ $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) u
                     }
                     break;
                 case "gacha banyak" :
+                case "gacha kontol" :
                     re :
                     $balas = null;
                     $ssr = 0;
@@ -125,6 +126,21 @@ $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) u
                         $text2 = messHandler::objText("SSR = " . $ssr . "\nSR = " . $sr . "\nR =" . $r . "\n" . $tx);
                         messHandler::more($event->getReplyToken(), [$text1, $text2]);
                     }
+                break;
+                case "xp" :
+                    $xp = $db->get("xp","xp",["userid" => $event->getUserId()]);
+                    messHandler::replyText($event->getReplyToken(),"xp kamu sebanyak : ".$xp);
+                break;
+                default :
+                    $uaid = $db->get("xp","xp",["userid" => $event->getUserId()]);
+                    if($uaid == null or empty($uaid)){
+                        $db->insert("xp",["userid" => $event->getUserId(),"xp" => 0]);
+                    }
+                    else{
+                        $xp = rand(1,2);
+                        $db->update("xp",["xp[+]" => $xp],["userid" => $event->getUserId()]);
+                    }
+                break;
             }
 
         }
