@@ -149,7 +149,10 @@ $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) u
                         $profile = $bot->getProfile($id["userid"]);
                         $json = $profile->getJSONDecodedBody();
                         $nama = $json['displayName'];
-                        $balas = $balas.$angka.". ".$nama;
+                        if($nama = ''){
+                            $nama = "?????";
+                        }
+                        $balas = $balas.$angka.". ".$nama." : ".$id["xp"];
                         if($angka<10){
                             $balas = $balas."\n";
                         }
