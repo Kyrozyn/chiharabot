@@ -129,7 +129,7 @@ $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) u
                 break;
                 case "xp" :
                     $xp = $db->get("xp","xp",["userid" => $event->getUserId()]);
-                    if(!$db->has("xp",["userid" => $event->getUserId()])) {
+                    if($db->has("xp",["userid" => $event->getUserId()])) {
                         messHandler::replyText($event->getReplyToken(), "Xp kamu sebanyak : " . $xp);
                     }
                     else{
