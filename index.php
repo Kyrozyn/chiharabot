@@ -140,7 +140,7 @@ $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) u
                 break;
                 case "!leaderboard":
                 case "!lb":
-                    $userid = $db->select("xp",["userid","xp"],['LIMIT' => 10, "ORDER" => ["xp"=>"desc"]]);
+                    $userid = $db->select("xp",["userid","xp"],["LIMIT" => 10, "ORDER" => ["xp"=>"desc"]]);
                     $text = "***Leaderboard***\n";
                     $angka = 0;
                     $balas = null;
@@ -154,7 +154,7 @@ $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) u
                     $satu = messHandler::objText($text);
                     $dua = messHandler::objText($balas);
                     //messHandler::more($event->getReplyToken(), [$satu, $dua]);
-                    messHandler::replyText($event->getReplyToken(),print_r($userid,1));
+                    messHandler::replyText($event->getReplyToken(),print_r($userid,1)."\n".print_r($db->error(),1));
                     break;
                 default :
                     if(!$db->has("xp",["userid" => $event->getUserId()])){
