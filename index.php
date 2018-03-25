@@ -141,15 +141,18 @@ $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) u
                 case "!leaderboard":
                 case "!lb":
                     $userid = $db->select("xp",["userid","xp"],["ORDER" => ["xp"=>"DESC"],"LIMIT" => 10]);
-                    $text = "***Leaderboard***\n";
+                    $text = "***Leaderboard***";
                     $angka = 0;
                     $balas = null;
                     foreach ($userid as $id){
                         $angka = $angka+1;
-                        $profile = $bot->getProfile($id);
+                        $profile = $bot->getProfile($id["userid"]);
                         $json = $profile->getJSONDecodedBody();
                         $nama = $json['displayName'];
-                        $balas = $balas.$angka.". ".$nama."\n";
+                        $balas = $balas.$angka.". ".$nama;
+                        if(!$angka=10){
+                            $balas = $balas."\n";
+                        }
                     }
                     $satu = messHandler::objText($text);
                     $dua = messHandler::objText($balas);
