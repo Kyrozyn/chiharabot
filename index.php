@@ -114,7 +114,15 @@ $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) u
                     }
                     else {
                         $text1 = messHandler::objText($balas);
-                        $text2 = messHandler::objText("SSR = " . $ssr . "\nSR = " . $sr . "\nR =" . $r . "\nJangan lupa sikat gigi sebelum gacha ^_^");
+						if($r < 2){
+                            $rand = ["Ampas sekali hidup anda ^_^","Perbanyak tobat agar luck anda meningkat ^_^"];
+                            $tx = $rand[array_rand($rand)];
+						}
+						else{
+						    $rand = ["Jangan lupa sikat gigi sebelum gacha ^_^","Jangan lupa puasa sebelum gacha ^_^","Jangan lupa makan sebelum gacha ^_^","Jangan lupa minum sebelum gacha ^_^"];
+							$tx = $rand[array_rand($rand)];
+						}
+                        $text2 = messHandler::objText("SSR = " . $ssr . "\nSR = " . $sr . "\nR =" . $r . "\n" . $tx);
                         messHandler::more($event->getReplyToken(), [$text1, $text2]);
                     }
             }
