@@ -148,7 +148,7 @@ $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) u
                         $angka = $angka+1;
                         $profile = $bot->getProfile($id);
                         $json = $profile->getJSONDecodedBody();
-                        $nama = $json[['displayName']];
+                        $nama = $json['displayName'];
                         $balas = $balas.$angka.". ".$nama."\n";
                     }
                     $satu = messHandler::objText($text);
