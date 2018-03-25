@@ -130,7 +130,7 @@ $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) u
                 case "xp" :
                     $xp = $db->get("xp","xp",["userid" => $event->getUserId()]);
                     messHandler::replyText($event->getReplyToken(),"xp kamu sebanyak : ".$xp);
-                    file_put_contents('php://stderr', 'Body: '."log db : ".print_r($db->log()));
+                    file_put_contents('php://stderr', 'Body: '."log db : ".print_r($db->error(),1));
 
                 break;
                 default :
@@ -142,7 +142,7 @@ $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) u
                         $xp = rand(1,2);
                         $db->update("xp",["xp[+]" => $xp],["userid" => $event->getUserId()]);
                     }
-                    file_put_contents('php://stderr', 'Body: '."log db : ".print_r($db->log()));
+                    file_put_contents('php://stderr', 'Body: '."log db : ".print_r($db->error(),1));
                 break;
             }
 
