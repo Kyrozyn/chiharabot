@@ -139,12 +139,12 @@ $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) u
 
                 break;
                 default :
-                    $uaid = $db->get("xp","xp",["userid" => $event->getUserId()]);
-                    if($uaid = ''){
+                    if(!$db->has("xp",["userid" => $event->getUserId()])){
                         $db->insert("xp",["userid" => $event->getUserId(),"xp" => 0]);
                         file_put_contents('php://stderr',"user tambah : ".$event->getUserId());
                     }
                     else{
+                        $uaid = $db->get("xp","xp",["userid" => $event->getUserId()]);
                         $a = $event->getUserId();
                         if(isset($a)) {
                             $xp = rand(1, 2);
