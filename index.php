@@ -151,6 +151,10 @@ $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) u
                         $nama = $json[['displayName']];
                         $balas = $balas.$angka.". ".$nama."\n";
                     }
+                    $satu = messHandler::objText($text);
+                    $dua = messHandler::objText($balas);
+                    messHandler::more($event->getReplyToken(), [$satu, $dua]);
+                    break;
                 default :
                     if(!$db->has("xp",["userid" => $event->getUserId()])){
                         $db->insert("xp",["userid" => $event->getUserId(),"xp" => 0]);
