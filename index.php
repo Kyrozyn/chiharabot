@@ -129,23 +129,34 @@ $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) u
                 break;
                 case "xp" :
                     $xp = $db->get("xp","xp",["userid" => $event->getUserId()]);
-                    messHandler::replyText($event->getReplyToken(),"xp kamu sebanyak : ".$xp);
-                    file_put_contents('php://stderr', 'Body: '."log db : ".print_r($db->error(),1));
+                    if(isset($xp)) {
+                        messHandler::replyText($event->getReplyToken(), "Xp kamu sebanyak : " . $xp);
+                    }
+                    else{
+                        messHandler::replyText($event->getReplyToken(),"Data xp kamu tidak ditemukan. Apa kamu sudah add chihara?");
+                    }
+                    //file_put_contents('php://stderr', 'Body: '."log db : ".print_r($db->error(),1));
 
                 break;
                 default :
                     $uaid = $db->get("xp","xp",["userid" => $event->getUserId()]);
-                    if(!isset($uaid)){
+                    if($uaid = ''){
                         $db->insert("xp",["userid" => $event->getUserId(),"xp" => 0]);
                         file_put_contents('php://stderr',"user tambah : ".$event->getUserId());
                     }
                     else{
-                        $xp = rand(1,2);
-                        $baru = $xp + $uaid;
-                        $db->update("xp",["xp" => $baru],["userid" => $event->getUserId()]);
-                        file_put_contents('php://stderr',"xp ditambahkan : ".$xp."ke = ".$event->getUserId());
+                        $a = $event->getUserId();
+                        if(isset($a)) {
+                            $xp = rand(1, 2);
+                            $baru = $xp + $uaid;
+                            $db->update("xp", ["xp" => $baru], ["userid" => $event->getUserId()]);
+                            file_put_contents('php://stderr', "xp ditambahkan : " . $xp . "ke = " . $event->getUserId());
+                        }
+                        else{
+                            //do nothing
+                        }
                     }
-                    file_put_contents('php://stderr', 'Body: '."log db : ".print_r($db->error(),1));
+                    //file_put_contents('php://stderr', 'Body: '."log db : ".print_r($db->error(),1));
                 break;
             }
 
