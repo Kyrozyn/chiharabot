@@ -140,7 +140,8 @@ $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) u
                     }
                     else{
                         $xp = rand(1,2);
-                        $db->update("xp",["xp[+]" => $xp],["userid" => $event->getUserId()]);
+                        $baru = $xp + $uaid;
+                        $db->update("xp",["xp" => $baru],["userid" => $event->getUserId()]);
                     }
                     file_put_contents('php://stderr', 'Body: '."log db : ".print_r($db->error(),1));
                 break;
