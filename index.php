@@ -163,8 +163,16 @@ $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) u
                     //messHandler::replyText($event->getReplyToken(),print_r($userid,1)."\n".print_r($db->error(),1));
                     break;
                 case "!lbg":
+                    $uaid = $db->get("xp","xp",["userid" => $event->getUserId()]);
+                    $a = $event->getUserId();
+                    if(isset($a)) {
+                        $xp = rand(1, 2);
+                        $baru = $xp + $uaid;
+                        $db->update("xp", ["xp" => $baru,"groupid"=>$event->getGroupId()], ["userid" => $event->getUserId()]);
+                        file_put_contents('php://stderr', "xp ditambahkan : " . $xp . " ke : " . $event->getUserId());
+                    }
                     $userid = $db->select("xp",["userid","xp"],["ORDER" => ["xp"=>"DESC"],"LIMIT" => 10,"groupid"=>$event->getGroupId()]);
-                    $text = "***Leaderboard***";
+                    $text = "***Group Leaderboard***";
                     $angka = 0;
                     $balas = null;
                     foreach ($userid as $id){
