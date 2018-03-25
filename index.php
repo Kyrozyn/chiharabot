@@ -140,7 +140,7 @@ $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) u
                 break;
                 case "!leaderboard":
                 case "!lb":
-                    $userid = $db->select("xp",["userid","xp"],["ORDER" => ["xp"=>"desc"],"LIMIT" => 10]);
+                    $userid = $db->select("xp",["userid","xp"],["ORDER" => ["xp"=>"desc"]]);
                     $text = "***Leaderboard***\n";
                     $angka = 0;
                     $balas = null;
