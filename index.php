@@ -37,8 +37,8 @@ $app->get('/',function (){
 $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) use ($bot,$db){
     include "messHandler.php";
     //For log to heroku logs
-    $body = file_get_contents('php://input');
-    file_put_contents('php://stderr', 'Body: '.$body);
+    //$body = file_get_contents('php://input');
+    //file_put_contents('php://stderr', 'Body: '.$body);
     ////////////////////////
     $signature = $req->getHeader(HTTPHeader::LINE_SIGNATURE);
     $result = null;
@@ -76,6 +76,7 @@ $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) u
                     }
                     break;
                 case "gacha banyak" :
+                case "gacha kontol" :
                     re :
                     $balas = null;
                     $ssr = 0;
@@ -114,15 +115,104 @@ $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) u
                     }
                     else {
                         $text1 = messHandler::objText($balas);
-						if($r == 9){
-							$tx = "Ampas sekali hidup anda ^_^";
+						if($sr < 2 AND $ssr <1){
+                            $rand = ["Ampas sekali hidup anda ^_^","Perbanyak tobat agar luck anda meningkat ^_^"];
+                            $tx = $rand[array_rand($rand)];
 						}
 						else{
-							$tx = "Jangan lupa sikat gigi sebelum gacha ^_^";
+						    $rand = ["Jangan lupa sikat gigi sebelum gacha ^_^","Jangan lupa puasa sebelum gacha ^_^","Jangan lupa makan sebelum gacha ^_^","Jangan lupa minum sebelum gacha ^_^"];
+							$tx = $rand[array_rand($rand)];
 						}
                         $text2 = messHandler::objText("SSR = " . $ssr . "\nSR = " . $sr . "\nR =" . $r . "\n" . $tx);
                         messHandler::more($event->getReplyToken(), [$text1, $text2]);
                     }
+                break;
+                case "xp" :
+                    $xp = $db->get("xp","xp",["userid" => $event->getUserId()]);
+                    if($db->has("xp",["userid" => $event->getUserId()])) {
+                        messHandler::replyText($event->getReplyToken(), "Xp kamu sebanyak : " . $xp);
+                    }
+                    else{
+                        messHandler::replyText($event->getReplyToken(),"Data xp kamu tidak ditemukan. Apa kamu sudah add chihara?");
+                    }
+                    //file_put_contents('php://stderr', 'Body: '."log db : ".print_r($db->error(),1));
+
+                break;
+                case "!leaderboard":
+                case "!lb":
+                    $userid = $db->select("xp",["userid","xp"],["ORDER" => ["xp"=>"DESC"],"LIMIT" => 10]);
+                    $text = "***Leaderboard***";
+                    $angka = 0;
+                    $balas = null;
+                    foreach ($userid as $id){
+                        $angka = $angka+1;
+                        $profile = $bot->getProfile($id["userid"]);
+                        $json = $profile->getJSONDecodedBody();
+                        $nama = $json['displayName'];
+                        if(empty($nama)){
+                            $nama = "????";
+                        }
+                        $balas = $balas.$angka.". ".$nama." : ".$id["xp"];
+                        if($angka<10){
+                            $balas = $balas."\n";
+                        }
+                    }
+                    $satu = messHandler::objText($text);
+                    $dua = messHandler::objText($balas);
+                    messHandler::more($event->getReplyToken(), [$satu, $dua]);
+                    //messHandler::replyText($event->getReplyToken(),print_r($userid,1)."\n".print_r($db->error(),1));
+                    break;
+                case "!lbg":
+                    $uaid = $db->get("xp","xp",["userid" => $event->getUserId()]);
+                    $a = $event->getUserId();
+                    if(isset($a)) {
+                        $xp = rand(1, 2);
+                        $baru = $xp + $uaid;
+                        $db->update("xp", ["xp" => $baru,"groupid"=>$event->getGroupId()], ["userid" => $event->getUserId()]);
+                        file_put_contents('php://stderr', "xp ditambahkan : " . $xp . " ke : " . $event->getUserId());
+                    }
+                    $userid = $db->select("xp",["userid","xp"],["ORDER" => ["xp"=>"DESC"],"LIMIT" => 10,"groupid"=>$event->getGroupId()]);
+                    $text = "***Group Leaderboard***";
+                    $angka = 0;
+                    $balas = null;
+                    foreach ($userid as $id){
+                        $angka = $angka+1;
+                        $profile = $bot->getProfile($id["userid"]);
+                        $json = $profile->getJSONDecodedBody();
+                        $nama = $json['displayName'];
+                        if(empty($nama)){
+                            $nama = "????";
+                        }
+                        $balas = $balas.$angka.". ".$nama." : ".$id["xp"];
+                        if($angka<10){
+                            $balas = $balas."\n";
+                        }
+                    }
+                    $satu = messHandler::objText($text);
+                    $dua = messHandler::objText($balas);
+                    messHandler::more($event->getReplyToken(), [$satu, $dua]);
+                    //messHandler::replyText($event->getReplyToken(),print_r($userid,1)."\n".print_r($db->error(),1));
+                    break;
+                default :
+                    if(!$db->has("xp",["userid" => $event->getUserId()])){
+                        $db->insert("xp",["userid" => $event->getUserId(),"xp" => 0,"groupid"=>$event->getGroupId()]);
+                        file_put_contents('php://stderr',"user tambah : ".$event->getUserId());
+                    }
+                    else{
+                        $uaid = $db->get("xp","xp",["userid" => $event->getUserId()]);
+                        $a = $event->getUserId();
+                        if(isset($a)) {
+                            $xp = rand(1, 2);
+                            $baru = $xp + $uaid;
+                            $db->update("xp", ["xp" => $baru,"groupid"=>$event->getGroupId()], ["userid" => $event->getUserId()]);
+                            file_put_contents('php://stderr', "xp ditambahkan : " . $xp . " ke : " . $event->getUserId());
+                        }
+                        else{
+                            //do nothing
+                        }
+                    }
+                    //file_put_contents('php://stderr', 'Body: '."log db : ".print_r($db->error(),1));
+                break;
             }
 
         }
