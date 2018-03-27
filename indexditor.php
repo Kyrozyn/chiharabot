@@ -3,13 +3,9 @@ function adminer_object() {
   
   class AdminerSoftware extends Adminer {
     
-	function loginForm() {
-    ?>
-<input type="hidden" name="driver" value="pgsql">
-<?php
-    echo "<p><input type='submit' value='" . lang('Login') . "'>\n";
-    echo checkbox("permanent", 1, $_COOKIE["adminer_permanent"], lang('Permanent login')) . "\n";
-}
+	function database(){
+		return 'pgsql';
+	}
 
     function name() {
       // custom name in title and heading
