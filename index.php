@@ -3,6 +3,7 @@ require __DIR__ . '/vendor/autoload.php';
 
 use LINE\LINEBot;
 use Slim\App;
+use Medoo\Medoo;
 use LINE\LINEBot\Constant\HTTPHeader;
 $configs =  [
     'settings' => ['displayErrorDetails' => true],
