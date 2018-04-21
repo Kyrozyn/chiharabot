@@ -33,7 +33,7 @@ $app->get('/',function (){
 });
 $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) use ($bot,$db){
     include "messHandler.php";
-    include "textParser";
+    include "textParser.php";
     //For log to heroku logs
     //$body = file_get_contents('php://input');
     //file_put_contents('php://stderr', 'Body: '.$body);
