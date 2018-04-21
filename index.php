@@ -13,6 +13,14 @@ $app = new App($configs);
 $channel_access_token = "Nkvg98JS9Z5KeCVmws/e4KEN2CrT7vdCR8EUUXwo8UmfDunvwLYY9EqeAWmTwApt18V0BsFvwyGHsik7xZR+h68eRz6QWtXbFTnX5iYY2qJ7GxYpPXApnK7ZQvqLaUxh+QbnY58aWT/ZJ/bEDA7J+gdB04t89/1O/w1cDnyilFU=";
 $channel_secret = "eba27b50c15c58a656edc8846102b661";
 //
+Cloudinary::config(array(
+    "cloud_name" => "chiharakntl",
+    "api_key" => "393212918283268",
+    "api_secret" => "v5Jbx2avscmwrEMQCrvUMe4J1TQ",
+    "resource_type" => "raw"
+));
+
+//
 try {
     $db = new Medoo([
         'database_type' => 'pgsql',
@@ -45,6 +53,7 @@ $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) u
     }
     $events = $bot->parseEventRequest($req->getBody(), $signature[0]);
     foreach ($events as $event) {
+        $messageType = $event['message']['type'];
         $text = new textParser($event->getText());
         if ($event->isUserEvent()){
             messHandler::replyText($event->getReplyToken(),"Hae");
@@ -211,9 +220,32 @@ $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) u
                     break;
             }
 
-            switch ($text->textBintang){
-                case kw :
-
+            switch ($text->textBintang[0]){
+                case keyword :
+                    $admin = $db->has("admin",["userid[=]"=>$event->getUserId()]);
+                    if($admin) {
+                        $ada = $db->has("keyword", ["then[=]" => "-"]);
+                        if (!empty($text->textBintang[1]) AND !$ada) {
+                            messHandler::replyText($event->getReplyToken(), "Silahkan upload Gambarnya, goshujin-sama! ^_^");
+                            $db->insert("keyword", ["if" => $text->textBintang[1], "then" => "-"]);
+                        } else {
+                            messHandler::replyText($event->getReplyToken(), "Ada request sebelumnya yg belum selesai..\nSilahkan upload Gambarnya, goshujin-sama! ^_^");
+                        }
+                    }
+                break;
+            }
+            if($messageType == "image"){
+                $admin = $db->has("admin",["userid[=]"=>$event->getUserId()]);
+                if($admin) {
+                    $picId = $event['message']['id'];
+                    $url = "https://chiharabackup.herokuapp.com/index.php/content/" . $picId;
+                    $test = Cloudinary\Uploader::upload($url, ["public_id" => $picId, "resource_type" => "auto"]);
+                    $decode = json_decode($test);
+                    $go = $db->update("keyword", ["then" => $decode["secure_url"]], ["then[=]" => "-"]);
+                    if ($go) {
+                        messHandler::replyText($event->getReplyToken(), "keyword berhasil ditambahkan, goshujin-sama! ^_^");
+                    }
+                }
             }
         }
     }
@@ -231,6 +263,19 @@ $app->get('/refreshname',function (\Slim\Http\Request $req, \Slim\Http\Response 
             $succ = $succ +1;
         }
     }
+});
+
+$app->get('/content/{messageId}', function($req, $res) use ($bot)
+{
+    // get message content
+    $route      = $req->getAttribute('route');
+    $messageId = $route->getArgument('messageId');
+    $result = $bot->getMessageContent($messageId);
+
+    // set response
+    $res->write($result->getRawBody());
+
+    return $res->withHeader('Content-Type', $result->getHeader('Content-Type'));
 });
 
 $app->run();
