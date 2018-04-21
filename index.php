@@ -1,10 +1,9 @@
 <?php
 require __DIR__ . '/vendor/autoload.php';
-use Medoo\Medoo;
+
 use LINE\LINEBot;
 use Slim\App;
 use LINE\LINEBot\Constant\HTTPHeader;
-
 $configs =  [
     'settings' => ['displayErrorDetails' => true],
 ];
@@ -26,16 +25,14 @@ catch(Exception $e){
     file_put_contents("php://stderr",$e->getMessage());
     file_put_contents("php://stderr","\nError on Db... Sorry...");
 }
-
 $httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient($channel_access_token);
 $bot = new LINEBot($httpClient, ['channelSecret' => $channel_secret]);
-
 $app->get('/',function (){
     echo 'testMiku';
 });
-
 $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) use ($bot,$db){
     include "messHandler.php";
+    include "textParser";
     //For log to heroku logs
     //$body = file_get_contents('php://input');
     //file_put_contents('php://stderr', 'Body: '.$body);
@@ -47,14 +44,14 @@ $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) u
     }
     $events = $bot->parseEventRequest($req->getBody(), $signature[0]);
     foreach ($events as $event) {
-        $text = $event->getText();
+        $text = new textParser($event->getText());
         if ($event->isUserEvent()){
             messHandler::replyText($event->getReplyToken(),"Hae");
         }
         if ($event->isGroupEvent()){
-            switch(strtolower($text)){
+            switch($text->textKecil){
                 case "testdb" :
-                    messHandler::replyText($event->getReplyToken(),print_r($db->info()));
+                    messHandler::replyText($event->getReplyToken(),print_r($db->info(),1));
                     break;
                 case "gacha" :
                     $roll = random_int(1,100);
@@ -115,18 +112,18 @@ $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) u
                     }
                     else {
                         $text1 = messHandler::objText($balas);
-						if($sr < 2 AND $ssr <1){
+                        if($sr < 2 AND $ssr <1){
                             $rand = ["Ampas sekali hidup anda ^_^","Perbanyak tobat agar luck anda meningkat ^_^"];
                             $tx = $rand[array_rand($rand)];
-						}
-						else{
-						    $rand = ["Jangan lupa sikat gigi sebelum gacha ^_^","Jangan lupa puasa sebelum gacha ^_^","Jangan lupa makan sebelum gacha ^_^","Jangan lupa minum sebelum gacha ^_^"];
-							$tx = $rand[array_rand($rand)];
-						}
+                        }
+                        else{
+                            $rand = ["Jangan lupa sikat gigi sebelum gacha ^_^","Jangan lupa puasa sebelum gacha ^_^","Jangan lupa makan sebelum gacha ^_^","Jangan lupa minum sebelum gacha ^_^"];
+                            $tx = $rand[array_rand($rand)];
+                        }
                         $text2 = messHandler::objText("SSR = " . $ssr . "\nSR = " . $sr . "\nR =" . $r . "\n" . $tx);
                         messHandler::more($event->getReplyToken(), [$text1, $text2]);
                     }
-                break;
+                    break;
                 case "xp" :
                     $xp = $db->get("xp","xp",["userid" => $event->getUserId()]);
                     if($db->has("xp",["userid" => $event->getUserId()])) {
@@ -136,8 +133,7 @@ $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) u
                         messHandler::replyText($event->getReplyToken(),"Data xp kamu tidak ditemukan. Apa kamu sudah add chihara?");
                     }
                     //file_put_contents('php://stderr', 'Body: '."log db : ".print_r($db->error(),1));
-
-                break;
+                    break;
                 case "!leaderboard":
                 case "!lb":
                     $userid = $db->select("xp",["userid","xp"],["ORDER" => ["xp"=>"DESC"],"LIMIT" => 10]);
@@ -211,11 +207,29 @@ $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) u
                             //do nothing
                         }
                     }
-                    //file_put_contents('php://stderr', 'Body: '."log db : ".print_r($db->error(),1));
-                break;
+                    break;
             }
 
+            switch ($text->textBintang){
+                case kw :
+
+            }
         }
     }
 });
+
+$app->get('/refreshname',function (\Slim\Http\Request $req, \Slim\Http\Response $res) use ($bot,$db){
+    $database = $db->select("xp",["userid","xp","nama"],["ORDER" => ["xp"=>"DESC"]]);
+    $succ = 0;
+    foreach ($database as $data){
+        if($data["nama"] == "-"){
+            $profile = $bot->getProfile($data["userid"]);
+            $json = $profile->getJSONDecodedBody();
+            $nama = $json['displayName'];
+            $db->update("xp",["nama"=> $nama],["userid[=]"=>$data["userid"]]);
+            $succ = $succ +1;
+        }
+    }
+});
+
 $app->run();
