@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b585a5f8a999fb2216a2b2f08cbff134",
+    "content-hash": "64af0a569a1a134e2c137cb92bf53e52",
     "packages": [
         {
             "name": "catfan/medoo",
-            "version": "v1.5.3",
+            "version": "v1.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/catfan/Medoo.git",
-                "reference": "1aa25a4001e0cfb739ba2996f00f4a3d2a7fdf07"
+                "reference": "53a02b300d673f716cb06bf0e24fd774ec53939f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/catfan/Medoo/zipball/1aa25a4001e0cfb739ba2996f00f4a3d2a7fdf07",
-                "reference": "1aa25a4001e0cfb739ba2996f00f4a3d2a7fdf07",
+                "url": "https://api.github.com/repos/catfan/Medoo/zipball/53a02b300d673f716cb06bf0e24fd774ec53939f",
+                "reference": "53a02b300d673f716cb06bf0e24fd774ec53939f",
                 "shasum": ""
             },
             "require": {
@@ -63,7 +63,7 @@
                 "sql",
                 "sqlite"
             ],
-            "time": "2017-12-25T17:02:41+00:00"
+            "time": "2018-12-08T20:24:23+00:00"
         },
         {
             "name": "cloudinary/cloudinary_php",
