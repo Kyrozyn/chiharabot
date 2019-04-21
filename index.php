@@ -213,15 +213,12 @@ $app->post('/bot',function (\Slim\Http\Request $req, \Slim\Http\Response $res) u
                             $db->update("xp", ["xp" => $baru,"groupid"=>$event->getGroupId()], ["userid" => $event->getUserId()]);
                             file_put_contents('php://stderr', "xp ditambahkan : " . $xp . " ke : " . $event->getUserId());
                         }
-                        else{
-                            //do nothing
-                        }
                     }
                     break;
             }
 
             switch ($text->textBintang[0]){
-                case keyword :
+                case "keyword" :
                     $admin = $db->has("admin",["userid[=]"=>$event->getUserId()]);
                     if($admin) {
                         $ada = $db->has("keyword", ["then[=]" => "-"]);
